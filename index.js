@@ -1,15 +1,26 @@
-var fs = require('fs'); //file system
+const fs = require('fs'); //file system
+const parse = require('csv-parse/lib/sync');
+const readlineSync = require('readline-sync');
+
+const Transaction = require('C:\\Work\\Training\\SupportBank\\transactionClass.js');
+const Account = require('C:\\Work\\Training\\SupportBank\\accountClass.js');
+
+const formatter = new Intl.NumberFormat('en-UK', {
+    style: 'currency',
+    currency: 'GBP',
+    minimumFractionDigits: 2,
+    });
+
+
 dataFile = 'Transactions2014.csv';
-var inputArray = fs.readFileSync(dataFile).toString();
 
-var parse = require('csv-parse/lib/sync');
-records = parse(inputArray, {columns: true});
+const inputArray = fs.readFileSync(dataFile).toString();
 
-var Transaction = require('C:\\Work\\Training\\SupportBank\\transactionClass.js');
+const records = parse(inputArray, {columns: true});
 
 transactions = [];
 
-for(i in records)
+for(let i in records)
 {
     transactions[i] = new Transaction(
         records[i]['Date'],
@@ -19,14 +30,12 @@ for(i in records)
         records[i]['Amount']);
 }
 
-var Account = require('C:\\Work\\Training\\SupportBank\\accountClass.js');
-
 accounts = [];
 
 function accountExistsQ(string) {
     check = false;
 
-    for (i in accounts)
+    for (let i in accounts)
     {
         if(accounts[i].name==string)
             check = true;
@@ -34,7 +43,7 @@ function accountExistsQ(string) {
     return check;
 }
 
-for(i in transactions)
+for(let i in transactions)
 {
     if(!accountExistsQ(transactions[i].from))
     {
@@ -54,20 +63,6 @@ for(i in transactions)
     receiverAccount.amount = receiverAccount.amount + transactions[i].amount;
 }
 
-// for(i in accounts)
-// {
-//     console.log(accounts[i]);
-// }
-
-var formatter = new Intl.NumberFormat('en-UK', {
-    style: 'currency',
-    currency: 'GBP',
-    minimumFractionDigits: 2,
-    // the default value for minimumFractionDigits depends on the currency
-    // and is usually already 2
-});
-
-var readlineSync = require('readline-sync');
 
 userInput = readlineSync.question('Please enter "List All" or "List[Account]" : ');
 
