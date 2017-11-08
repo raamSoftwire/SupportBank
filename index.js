@@ -15,8 +15,8 @@ const formatter = new Intl.NumberFormat('en-UK', {
 dataFile = 'Transactions2014.csv';
 const inputArray = fs.readFileSync(dataFile).toString();
 const records = parse(inputArray, {columns: true});
-transactions = [];
 
+transactions = [];
 for(let i in records)
 {
     transactions[i] = new Transaction(
@@ -28,13 +28,12 @@ for(let i in records)
 }
 
 accounts = [];
-
 function accountExistsQ(string) {
     check = false;
 
     for (let i in accounts)
     {
-        if(accounts[i].name==string)
+        if(accounts[i].name === string)
             check = true;
     }
     return check;
@@ -50,7 +49,7 @@ for(let i in transactions)
     }
     else
     {
-        senderAccount = accounts.find(account => account.name == transactions[i].from);
+        senderAccount = accounts.find(account => account.name === transactions[i].from);
     }
 
     if(!accountExistsQ(transactions[i].to))
@@ -61,7 +60,7 @@ for(let i in transactions)
     }
     else
     {
-        receiverAccount = accounts.find(account => account.name == transactions[i].to);
+        receiverAccount = accounts.find(account => account.name === transactions[i].to);
     }
 
     senderAccount.amount = senderAccount.amount - transactions[i].amount;
@@ -69,14 +68,12 @@ for(let i in transactions)
 }
 
 const userInput = readlineSync.question('Please enter "List All" or "List [Account]" : ');
-const pattern = new RegExp("List ")
+const pattern = new RegExp("List ");
 
-if (userInput == 'List All')
+if (userInput === 'List All')
 {
     for(let i in accounts)
-    {
-        console.log(accounts[i].name + " : " + formatter.format(accounts[i].amount));
-    }
+            console.log(accounts[i].name + " : " + formatter.format(accounts[i].amount));
 }
 
 else if (pattern.test(userInput))
@@ -85,20 +82,37 @@ else if (pattern.test(userInput))
 
     if (accountExistsQ(name))
     {
-        //is this name one of the account name?
-        //if so show all transactions
-        console.log('show all logs here')
-
+        tempTransactions = [];
         for (let i in transactions)
         {
-
+            if(transactions[i].from === name || transactions[i].to === name)
+                tempTransactions.push(transactions[i]);
         }
 
+        for (let i in tempTransactions)
+        {
+            if(tempTransactions[i].from === name)
+            {
+                console.log(
+                    tempTransactions[i].date + " " +
+                    formatter.format("-" + tempTransactions[i].amount) + " \t" +
+                    tempTransactions[i].narrative);
+            }
+            else if (tempTransactions[i].to === name)
+            {
+                console.log(
+                    tempTransactions[i].date + " " +
+                    formatter.format(tempTransactions[i].amount) + " \t" +
+                    tempTransactions[i].narrative);
+            }
+            else
+                console.log('Big error');
 
+        }
     }
     else
     {
-        console.log(name + ' not found in system.')
+        console.log(name + ' not found in system.');
     }
 }
 
