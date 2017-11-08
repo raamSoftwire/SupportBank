@@ -15,17 +15,12 @@ for(i in records)
         records[i]['From'],
         records[i]['To'],
         records[i]['Narrative'],
-        records[i]['Amount'])
+        records[i]['Amount']);
 }
 
 var Account = require('C:\\Work\\Training\\SupportBank\\accountClass.js');
 
 accounts = [];
-
-// for(i in transactions)
-// {
-//
-// }
 
 function accountExistsQ(string) {
     check = false;
@@ -33,25 +28,36 @@ function accountExistsQ(string) {
     for (i in accounts)
     {
         if(accounts[i].name==string)
-        {
             check = true;
-        }
+    }
+    return check;
+}
+
+
+for(i in transactions)
+{
+    if(!accountExistsQ(transactions[i].from))
+    {
+        //if the account does not exist,create the account
+        senderAccount = new Account(transactions[i].from,0);
+        accounts.push(senderAccount)
     }
 
-    return check;
+    if(!accountExistsQ(transactions[i].to))
+    {
+        //if the account does not exist,create the account
+        receiverAccount = new Account(transactions[i].to,0);
+        accounts.push(receiverAccount)
+    }
+
+    //update the balance from this transaction
+
+    // accounts.indexOf(transactions[i].from)
+
+    // transactions[i].amount
 
 }
 
-console.log(
-accountExistsQ('Raam')
-)
-
-// accounts[0]= new Account('Raam',0)
-accounts.push(new Account('Raam',0))
-
-
-console.log(
-    accountExistsQ('Raam')
-)
+console.log(accounts.length)
 
 
