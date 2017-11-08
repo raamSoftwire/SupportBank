@@ -59,16 +59,33 @@ for(i in transactions)
 //     console.log(accounts[i]);
 // }
 
-// var formatter = new Intl.NumberFormat('en-UK', {
-//     style: 'currency',
-//     currency: 'GBP',
-//     minimumFractionDigits: 2,
-//     // the default value for minimumFractionDigits depends on the currency
-//     // and is usually already 2
-// });
+var formatter = new Intl.NumberFormat('en-UK', {
+    style: 'currency',
+    currency: 'GBP',
+    minimumFractionDigits: 2,
+    // the default value for minimumFractionDigits depends on the currency
+    // and is usually already 2
+});
 
 var readlineSync = require('readline-sync');
 
-userInput = readlineSync.question('Type your name : ');
+userInput = readlineSync.question('Please enter "List All" or "List[Account]" : ');
 
-console.log(userInput);
+
+if (userInput == 'List All')
+{
+    for(i in accounts)
+    {
+        console.log(accounts[i].name + " : " + formatter.format(accounts[i].amount));
+    }
+}
+
+else if (userInput == 'List ')//need a wildcard search here
+{
+    //list one person's account
+}
+
+else
+{
+    console.log('Please enter "List All" or "List[Account]" : ');
+}
