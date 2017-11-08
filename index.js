@@ -1,6 +1,7 @@
 const fs = require('fs'); //file system
 const parse = require('csv-parse/lib/sync');
 const readlineSync = require('readline-sync');
+const log4js = require('log4js');
 
 const Transaction = require('C:\\Work\\Training\\SupportBank\\transactionClass.js');
 const Account = require('C:\\Work\\Training\\SupportBank\\accountClass.js');
@@ -11,10 +12,20 @@ const formatter = new Intl.NumberFormat('en-UK', {
     minimumFractionDigits: 2,
     });
 
+log4js.configure({
+    appenders: {
+        file: { type: 'fileSync', filename: 'logs/debug.log' }
+    },
+    categories: {
+        default: { appenders: ['file'], level: 'debug'}
+    }
+});
 
-// dataFile = 'Transactions2014.csv';
-dataFile = 'DodgyTransactions2015.csv';
 
+dataFile = 'Transactions2014.csv';
+// dataFile = 'DodgyTransactions2015.csv';
+
+const logger = log4js.getLogger(dataFile);
 
 const inputArray = fs.readFileSync(dataFile).toString();
 const records = parse(inputArray, {columns: true});
