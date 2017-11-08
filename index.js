@@ -1,10 +1,13 @@
-
 var fs = require('fs'); //file system
-var array = fs.readFileSync('Transactions2014.csv').toString().split("\n");
+var inputArray = fs.readFileSync('Transactions2014.csv').toString();
+
+var parse = require('csv-parse/lib/sync');
+records = parse(inputArray, {columns: true});
+
+for(i in records)
+{
+    console.log(records[i]);
+}
 
 
-// for(i in array) {
-//     console.log(array[i]);
-// }
 
-console.log(array[1].split(","))
