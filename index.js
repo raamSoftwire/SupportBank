@@ -1,5 +1,6 @@
 var fs = require('fs'); //file system
-var inputArray = fs.readFileSync('Transactions2014.csv').toString();
+dataFile = 'Transactions2014.csv';
+var inputArray = fs.readFileSync(dataFile).toString();
 
 var parse = require('csv-parse/lib/sync');
 records = parse(inputArray, {columns: true});
@@ -33,7 +34,6 @@ function accountExistsQ(string) {
     return check;
 }
 
-
 for(i in transactions)
 {
     if(!accountExistsQ(transactions[i].from))
@@ -50,14 +50,25 @@ for(i in transactions)
         accounts.push(receiverAccount)
     }
 
-    //update the balance from this transaction
-
-    // accounts.indexOf(transactions[i].from)
-
-    // transactions[i].amount
-
+    senderAccount.amount = senderAccount.amount - transactions[i].amount;
+    receiverAccount.amount = receiverAccount.amount + transactions[i].amount;
 }
 
-console.log(accounts.length)
+// for(i in accounts)
+// {
+//     console.log(accounts[i]);
+// }
 
+// var formatter = new Intl.NumberFormat('en-UK', {
+//     style: 'currency',
+//     currency: 'GBP',
+//     minimumFractionDigits: 2,
+//     // the default value for minimumFractionDigits depends on the currency
+//     // and is usually already 2
+// });
 
+var readlineSync = require('readline-sync');
+
+userInput = readlineSync.question('Type your name : ');
+
+console.log(userInput);
