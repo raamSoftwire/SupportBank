@@ -18,7 +18,40 @@ for(i in records)
         records[i]['Amount'])
 }
 
-console.log(transactions[0])
-
-
 var Account = require('C:\\Work\\Training\\SupportBank\\accountClass.js');
+
+accounts = [];
+
+// for(i in transactions)
+// {
+//
+// }
+
+function accountExistsQ(string) {
+    check = false;
+
+    for (i in accounts)
+    {
+        if(accounts[i].name==string)
+        {
+            check = true;
+        }
+    }
+
+    return check;
+
+}
+
+console.log(
+accountExistsQ('Raam')
+)
+
+// accounts[0]= new Account('Raam',0)
+accounts.push(new Account('Raam',0))
+
+
+console.log(
+    accountExistsQ('Raam')
+)
+
+
