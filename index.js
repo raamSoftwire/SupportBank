@@ -13,11 +13,8 @@ const formatter = new Intl.NumberFormat('en-UK', {
 
 
 dataFile = 'Transactions2014.csv';
-
 const inputArray = fs.readFileSync(dataFile).toString();
-
 const records = parse(inputArray, {columns: true});
-
 transactions = [];
 
 for(let i in records)
@@ -49,46 +46,63 @@ for(let i in transactions)
     {
         //if the account does not exist,create the account
         senderAccount = new Account(transactions[i].from,0);
-        accounts.push(senderAccount)
+        accounts.push(senderAccount);
     }
     else
     {
-        senderAccount = accounts.find(account => account.name == transactions[i].from)
+        senderAccount = accounts.find(account => account.name == transactions[i].from);
     }
 
     if(!accountExistsQ(transactions[i].to))
     {
         //if the account does not exist,create the account
         receiverAccount = new Account(transactions[i].to,0);
-        accounts.push(receiverAccount)
+        accounts.push(receiverAccount);
     }
     else
     {
-        receiverAccount = accounts.find(account => account.name == transactions[i].to)
+        receiverAccount = accounts.find(account => account.name == transactions[i].to);
     }
 
     senderAccount.amount = senderAccount.amount - transactions[i].amount;
     receiverAccount.amount = receiverAccount.amount + transactions[i].amount;
 }
 
-
-userInput = readlineSync.question('Please enter "List All" or "List[Account]" : ');
-
+const userInput = readlineSync.question('Please enter "List All" or "List [Account]" : ');
+const pattern = new RegExp("List ")
 
 if (userInput == 'List All')
 {
-    for(i in accounts)
+    for(let i in accounts)
     {
         console.log(accounts[i].name + " : " + formatter.format(accounts[i].amount));
     }
 }
 
-else if (userInput == 'List ')//need a wildcard search here
+else if (pattern.test(userInput))
 {
-    //list one person's account
+    const name = userInput.slice(5);
+
+    if (accountExistsQ(name))
+    {
+        //is this name one of the account name?
+        //if so show all transactions
+        console.log('show all logs here')
+
+        for (let i in transactions)
+        {
+
+        }
+
+
+    }
+    else
+    {
+        console.log(name + ' not found in system.')
+    }
 }
 
 else
 {
-    console.log('Please enter "List All" or "List[Account]" : ');
+    console.log('Please enter "List All" or "List [Account]" : ');
 }
