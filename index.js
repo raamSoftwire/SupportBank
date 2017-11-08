@@ -4,7 +4,7 @@ var inputArray = fs.readFileSync('Transactions2014.csv').toString();
 var parse = require('csv-parse/lib/sync');
 records = parse(inputArray, {columns: true});
 
-const Transaction = require('C:\\Work\\Training\\SupportBank\\transactionClass.js');
+var Transaction = require('C:\\Work\\Training\\SupportBank\\transactionClass.js');
 
 transactions = [];
 
@@ -19,3 +19,6 @@ for(i in records)
 }
 
 console.log(transactions[0])
+
+
+var Account = require('C:\\Work\\Training\\SupportBank\\accountClass.js');

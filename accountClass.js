@@ -1,5 +1,3 @@
-var moment = require('moment');
-
 var formatter = new Intl.NumberFormat('en-UK', {
     style: 'currency',
     currency: 'GBP',
@@ -8,14 +6,11 @@ var formatter = new Intl.NumberFormat('en-UK', {
     // and is usually already 2
 });
 
-class Transaction {
-    constructor(date, from, to, narrative, amount) {
-        this.date = moment(date,"DD/MM/YYYY",true).format("DD/MM/YYYY");
-        this.from = from;
-        this.to = to;
-        this.narrative = narrative;
+class Account {
+    constructor(name,amount) {
+        this.name = name;
         this.amount = formatter.format(amount);
     }
 }
 
-module.exports = Transaction;
+module.exports = Account;
