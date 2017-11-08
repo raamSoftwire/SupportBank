@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "csv": "^2.0.0",
     "moment": "^2.19.1",
     "readline-sync": "^1.4.7"
   }
