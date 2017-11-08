@@ -12,7 +12,10 @@ const formatter = new Intl.NumberFormat('en-UK', {
     });
 
 
-dataFile = 'Transactions2014.csv';
+// dataFile = 'Transactions2014.csv';
+dataFile = 'DodgyTransactions2015.csv';
+
+
 const inputArray = fs.readFileSync(dataFile).toString();
 const records = parse(inputArray, {columns: true});
 
