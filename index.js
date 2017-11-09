@@ -14,31 +14,36 @@ const formatter = new Intl.NumberFormat('en-UK', {
     });
 
 log4js.configure({
-    appenders: {
-        file: { type: 'fileSync', filename: 'logs/debug.log' }
-    },
-    categories: {
-        default: { appenders: ['file'], level: 'debug'}
-    }
+    appenders: {file: { type: 'fileSync', filename: 'logs/debug.log' }},
+    categories: {default: { appenders: ['file'], level: 'debug'}}
 });
 
 
 // dataFile = 'Transactions2014.csv';
-dataFile = 'DodgyTransactions2015.csv';
+// dataFile = 'DodgyTransactions2015.csv';
+
+dataFile = 'Transactions2013.json';
 
 const logger = log4js.getLogger(dataFile);
 logger.debug("Program starting up...")
 
 const inputArray = fs.readFileSync(dataFile).toString();
-const records = parse(inputArray, {columns: true});
 
+
+
+// const records = parse(inputArray, {columns: true});
+
+const records = JSON.parse(inputArray);
 
 transactions = [];
+var keys = Object.keys(records[1]);
+
 for(let i in records)
 {
     let lineValue = parseInt(i) + 2;
 
-    if(!moment(records[i]['Date'],"DD/MM/YYYY",'en',true).isValid())
+
+    if(!moment(records[i]['Date'],["DD/MM/YYYY","YYYY-MM-DD"],'en').isValid())
     {
         logger.error("Invalid date found in line " + lineValue +
             " : " + records[i]['Date']);
@@ -53,11 +58,11 @@ for(let i in records)
     else
     {
         transaction = new Transaction(
-            records[i]['Date'],
-            records[i]['From'],
-            records[i]['To'],
-            records[i]['Narrative'],
-            records[i]['Amount']);
+            records[i][keys[0]],
+            records[i][keys[1]],
+            records[i][keys[2]],
+            records[i][keys[3]],
+            records[i][keys[4]]);
 
         transactions.push(transaction);
         //transaction not added to list of transactions
