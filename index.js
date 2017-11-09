@@ -7,10 +7,7 @@ const moment = require('moment');
 const Transaction = require('C:\\Work\\Training\\SupportBank\\transactionClass.js');
 const Account = require('C:\\Work\\Training\\SupportBank\\accountClass.js');
 
-// const accountExistsQ = require('C:\\Work\\Training\\SupportBank\\accountExistsQ.js');
-// import accountExistsQ from 'C:\\Work\\Training\\SupportBank\\accountExistsQ.js';
-let accountExistsQ = require('C:\\Work\\Training\\SupportBank\\accountExistsQ.js');
-
+const accountExistsQ = require('C:\\Work\\Training\\SupportBank\\accountExistsQ.js');
 
 const formatter = new Intl.NumberFormat('en-UK', {
     style: 'currency',
@@ -22,6 +19,72 @@ log4js.configure({
     appenders: {file: { type: 'fileSync', filename: 'logs/debug.log' }},
     categories: {default: { appenders: ['file'], level: 'debug'}}
 });
+
+function parseTransactions(){
+    var keys = Object.keys(records[1]);
+
+    for(let i in records)
+    {
+        let lineValue = parseInt(i) + 2; // +1 for header row, +1 for zero base
+
+        if(!moment(records[i]['Date'],["DD/MM/YYYY","YYYY-MM-DD"],'en').isValid())
+        {
+            logger.error("Invalid date found in line " + lineValue +
+                " : " + records[i]['Date']);
+        }
+
+        else if (isNaN(parseFloat(records[i]['Amount'])))
+        {
+            logger.error("Invalid amount found in line " + lineValue
+                + " : " + records[i]['Amount'])
+        }
+        else
+        {
+            transaction = new Transaction(
+                records[i][keys[0]],
+                records[i][keys[1]],
+                records[i][keys[2]],
+                records[i][keys[3]],
+                records[i][keys[4]]);
+
+            transactions.push(transaction);
+            //transaction not added to list of transactions
+        }
+    }
+    logger.info("Successfully parsed " + transactions.length + " of " + records.length +
+        " transactions");
+}
+
+function createAccounts()
+{
+    for(let i in transactions)
+    {
+        if(!accountExistsQ(transactions[i].from))
+        {
+            //if the account does not exist,create the account
+            senderAccount = new Account(transactions[i].from,0);
+            accounts.push(senderAccount);
+        }
+        else
+        {
+            senderAccount = accounts.find(account => account.name === transactions[i].from);
+        }
+
+        if(!accountExistsQ(transactions[i].to))
+        {
+            //if the account does not exist,create the account
+            receiverAccount = new Account(transactions[i].to,0);
+            accounts.push(receiverAccount);
+        }
+        else
+        {
+            receiverAccount = accounts.find(account => account.name === transactions[i].to);
+        }
+
+        senderAccount.amount = senderAccount.amount - transactions[i].amount;
+        receiverAccount.amount = receiverAccount.amount + transactions[i].amount;
+    }
+}
 
 function importFile(fileName) {
     var ext = fileName.split('.').pop();
@@ -73,79 +136,17 @@ logger.debug("Program starting up...")
 
 
 transactions = [];
-var keys = Object.keys(records[1]);
-
-for(let i in records)
-{
-    let lineValue = parseInt(i) + 2; // +1 for header row, +1 for zero base
-
-    if(!moment(records[i]['Date'],["DD/MM/YYYY","YYYY-MM-DD"],'en').isValid())
-    {
-        logger.error("Invalid date found in line " + lineValue +
-            " : " + records[i]['Date']);
-    }
-
-    else if (isNaN(parseFloat(records[i]['Amount'])))
-    {
-        logger.error("Invalid amount found in line " + lineValue
-            + " : " + records[i]['Amount'])
-    }
-    else
-    {
-        transaction = new Transaction(
-            records[i][keys[0]],
-            records[i][keys[1]],
-            records[i][keys[2]],
-            records[i][keys[3]],
-            records[i][keys[4]]);
-
-        transactions.push(transaction);
-        //transaction not added to list of transactions
-    }
-}
-logger.info("Successfully parsed " + transactions.length + " of " + records.length +
-    " transactions");
+parseTransactions();
 
 accounts = [];
-//
-// function accountExistsQ(string) {
-//     check = false;
-//
-//     for (let i in accounts)
-//     {
-//         if(accounts[i].name === string)
-//             check = true;
-//     }
-//     return check;
-// }
+createAccounts();
 
-for(let i in transactions)
-{
-    if(!accountExistsQ(transactions[i].from))
-    {
-        //if the account does not exist,create the account
-        senderAccount = new Account(transactions[i].from,0);
-        accounts.push(senderAccount);
-    }
-    else
-    {
-        senderAccount = accounts.find(account => account.name === transactions[i].from);
-    }
 
-    if(!accountExistsQ(transactions[i].to))
-    {
-        //if the account does not exist,create the account
-        receiverAccount = new Account(transactions[i].to,0);
-        accounts.push(receiverAccount);
-    }
-    else
-    {
-        receiverAccount = accounts.find(account => account.name === transactions[i].to);
-    }
 
-    senderAccount.amount = senderAccount.amount - transactions[i].amount;
-    receiverAccount.amount = receiverAccount.amount + transactions[i].amount;
-}
+
+
+
+
 
 const userInput = readlineSync.question('Please enter "List All" or "List [Account]" : ');
 const pattern = new RegExp("List ");
