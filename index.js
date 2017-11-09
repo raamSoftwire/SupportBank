@@ -7,6 +7,11 @@ const moment = require('moment');
 const Transaction = require('C:\\Work\\Training\\SupportBank\\transactionClass.js');
 const Account = require('C:\\Work\\Training\\SupportBank\\accountClass.js');
 
+// const accountExistsQ = require('C:\\Work\\Training\\SupportBank\\accountExistsQ.js');
+// import accountExistsQ from 'C:\\Work\\Training\\SupportBank\\accountExistsQ.js';
+let accountExistsQ = require('C:\\Work\\Training\\SupportBank\\accountExistsQ.js');
+
+
 const formatter = new Intl.NumberFormat('en-UK', {
     style: 'currency',
     currency: 'GBP',
@@ -102,17 +107,17 @@ logger.info("Successfully parsed " + transactions.length + " of " + records.leng
     " transactions");
 
 accounts = [];
-
-function accountExistsQ(string) {
-    check = false;
-
-    for (let i in accounts)
-    {
-        if(accounts[i].name === string)
-            check = true;
-    }
-    return check;
-}
+//
+// function accountExistsQ(string) {
+//     check = false;
+//
+//     for (let i in accounts)
+//     {
+//         if(accounts[i].name === string)
+//             check = true;
+//     }
+//     return check;
+// }
 
 for(let i in transactions)
 {
