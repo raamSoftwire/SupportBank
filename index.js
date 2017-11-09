@@ -22,18 +22,31 @@ function importFile(fileName) {
     var ext = fileName.split('.').pop();
     if(ext === "csv")
     {
+        try {
+            const inputArray = fs.readFileSync(dataFile).toString();
+            const records = parse(inputArray, {columns: true});
+            return records;
+        }
 
-        const inputArray = fs.readFileSync(dataFile).toString();
-        const records = parse(inputArray, {columns: true});
-        return records;
-
+        catch(err)
+        {
+           if (err.code === 'ENOENT')
+               console.log("File does not exist");
+        }
 
     }
     else if (ext === 'json')
     {
-        const inputArray = fs.readFileSync(dataFile).toString();
-        const records = JSON.parse(inputArray);
-        return records;
+        try {
+            const inputArray = fs.readFileSync(dataFile).toString();
+            const records = JSON.parse(inputArray);
+            return records;
+        }
+        catch(err)
+        {
+            if (err.code === 'ENOENT')
+                console.log("File does not exist");
+        }
     }
     else
     {
@@ -89,6 +102,7 @@ logger.info("Successfully parsed " + transactions.length + " of " + records.leng
     " transactions");
 
 accounts = [];
+
 function accountExistsQ(string) {
     check = false;
 
