@@ -2,9 +2,6 @@ const fs = require('fs'); //file system
 const parse = require('csv-parse/lib/sync');
 const readlineSync = require('readline-sync');
 const log4js = require('log4js');
-const moment = require('moment');
-
-const Transaction = require('./transactionClass');
 
 const accountExistsQ = require('./accountExistsQ');
 const createAccounts = require('./createAccounts');
@@ -21,7 +18,8 @@ log4js.configure({
     categories: {default: { appenders: ['file'], level: 'debug'}}
 });
 
-
+const logger = log4js.getLogger('index.js');
+logger.debug("Program starting up...")
 
 
 
@@ -42,8 +40,10 @@ function importFile(fileName) {
 
         catch(err)
         {
-           if (err.code === 'ENOENT')
+           if (err.code === 'ENOENT') {
                console.log("File does not exist");
+               process.exit();
+           }
         }
 
     }
@@ -56,13 +56,15 @@ function importFile(fileName) {
         }
         catch(err)
         {
-            if (err.code === 'ENOENT')
+            if (err.code === 'ENOENT') {
                 console.log("File does not exist");
+                process.exit();
+            }
         }
     }
     else
     {
-        console.log("Please enter the name of a suitable .csv or .json file")
+        console.log("Please enter the name of a suitable CSV,JSON or XML file")
     }
 
 }
@@ -70,20 +72,15 @@ function importFile(fileName) {
 
 
 const dataFile = readlineSync.question('Please enter the transaction filename : ');
+
 records = importFile(dataFile);
 
-
-
-
-const logger = log4js.getLogger('index.js');
-logger.debug("Program starting up...")
-
-
 transactions = [];
-parseTransactions();
+parseTransactions(); //parses records into transactions
 
 accounts = [];
-createAccounts();
+createAccounts(); //works through all transactions and creates all necessary accounts
+
 
 const userInput = readlineSync.question('Please enter "List All" or "List [Account]" : ');
 const pattern = new RegExp("List ");
