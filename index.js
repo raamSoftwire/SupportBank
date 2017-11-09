@@ -2,6 +2,7 @@ const fs = require('fs'); //file system
 const parse = require('csv-parse/lib/sync');
 const readlineSync = require('readline-sync');
 const log4js = require('log4js');
+const xml2js = require ('xml2js');
 
 const accountExistsQ = require('./accountExistsQ');
 const createAccounts = require('./createAccounts');
@@ -62,6 +63,25 @@ function importFile(fileName) {
             }
         }
     }
+    else if (ext === 'xml')
+    {
+        try {
+            const inputArray = fs.readFileSync(dataFile).toString();
+
+            var parser = new xml2js.Parser();
+            const records = parser.parseString(inputArray);
+            return records;
+        }
+        catch(err)
+        {
+            if (err.code === 'ENOENT') {
+                console.log("File does not exist");
+                process.exit();
+            }
+        }
+    }
+
+
     else
     {
         console.log("Please enter the name of a suitable CSV,JSON or XML file")
