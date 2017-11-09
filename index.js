@@ -3,10 +3,12 @@ const parse = require('csv-parse/lib/sync');
 const readlineSync = require('readline-sync');
 const log4js = require('log4js');
 const xml2js = require ('xml2js');
+const moment = require('moment');
+
+const Transaction = require('./transactionClass');
 
 const accountExistsQ = require('./accountExistsQ');
 const createAccounts = require('./createAccounts');
-const parseTransactions = require('./parseTransactions');
 
 const formatter = new Intl.NumberFormat('en-UK', {
     style: 'currency',
@@ -22,6 +24,52 @@ log4js.configure({
 const logger = log4js.getLogger('index.js');
 logger.debug("Program starting up...")
 
+function isValidRecord(record) {
+    validity = true;
+
+    if(!moment(record['Date'],["DD/MM/YYYY","YYYY-MM-DD"],'en').isValid())
+    {
+        logger.error("Invalid date found in line " + lineValue +
+            " : " + record['Date']);
+        validity = false;
+    }
+
+    if (isNaN(parseFloat(record['Amount'])))
+    {
+        logger.error("Invalid amount found in line " + lineValue
+            + " : " + record['Amount']);
+        validity = false;
+    }
+
+    return validity;
+}
+
+function parseTransactions(){
+
+    for(let i in records)
+    {
+        var keys = Object.keys(records[1]);
+
+        let lineValue = parseInt(i) + 2; // +1 for header row, +1 for zero base
+
+        if(isValidRecord(records[i]))
+        {
+            var keys = Object.keys(records[i]);
+
+            transaction = new Transaction(
+                records[i][keys[0]],
+                records[i][keys[1]],
+                records[i][keys[2]],
+                records[i][keys[3]],
+                records[i][keys[4]]);
+
+            transactions.push(transaction);
+        }
+
+    }
+    logger.info("Successfully parsed " + transactions.length + " of " + records.length +
+        " transactions");
+}
 
 
 function importFile(fileName) {
