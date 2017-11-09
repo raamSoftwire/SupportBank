@@ -2,6 +2,7 @@ const fs = require('fs'); //file system
 const parse = require('csv-parse/lib/sync');
 const readlineSync = require('readline-sync');
 const log4js = require('log4js');
+const moment = require('moment');
 
 const Transaction = require('C:\\Work\\Training\\SupportBank\\transactionClass.js');
 const Account = require('C:\\Work\\Training\\SupportBank\\accountClass.js');
@@ -22,24 +23,48 @@ log4js.configure({
 });
 
 
-dataFile = 'Transactions2014.csv';
-// dataFile = 'DodgyTransactions2015.csv';
+// dataFile = 'Transactions2014.csv';
+dataFile = 'DodgyTransactions2015.csv';
 
 const logger = log4js.getLogger(dataFile);
+logger.debug("Program starting up...")
 
 const inputArray = fs.readFileSync(dataFile).toString();
 const records = parse(inputArray, {columns: true});
 
+
 transactions = [];
 for(let i in records)
 {
-    transactions[i] = new Transaction(
-        records[i]['Date'],
-        records[i]['From'],
-        records[i]['To'],
-        records[i]['Narrative'],
-        records[i]['Amount']);
+    let lineValue = parseInt(i) + 2;
+
+    if(!moment(records[i]['Date'],"DD/MM/YYYY",'en',true).isValid())
+    {
+        logger.error("Invalid date found in line " + lineValue +
+            " : " + records[i]['Date']);
+    }
+
+    else if (isNaN(parseFloat(records[i]['Amount'])))
+    {
+
+        logger.error("Invalid amount found in line " + lineValue
+            + " : " + records[i]['Amount'])
+    }
+    else
+    {
+        transaction = new Transaction(
+            records[i]['Date'],
+            records[i]['From'],
+            records[i]['To'],
+            records[i]['Narrative'],
+            records[i]['Amount']);
+
+        transactions.push(transaction);
+        //transaction not added to list of transactions
+    }
 }
+logger.info("Successfully parsed " + transactions.length + " of " + records.length +
+    " transactions");
 
 accounts = [];
 function accountExistsQ(string) {
@@ -121,16 +146,20 @@ else if (pattern.test(userInput))
             }
             else
                 console.log('Big error');
+                logger.error("Unhandled error case");
 
         }
     }
     else
     {
         console.log(name + ' not found in system.');
+        logger.debug("User entered a name that was not in the system")
     }
 }
 
 else
 {
-    console.log('Please enter "List All" or "List [Account]" : ');
+    console.log('User did not input "List All" or "List [Account]" : ');
+    //maybe send this back to the user input step now
+    logger.debug("User did not input 'List All' or 'List [Account]'");
 }
