@@ -112,7 +112,8 @@ const pattern = new RegExp("List ");
 if (userInput === 'List All')
 {
     for(let i in accounts)
-            console.log(accounts[i].name + " : " + formatter.format(accounts[i].amount));
+        console.log(accounts[i].name + " : " + formatter.format(accounts[i].amount));
+        logger.debug("User entered 'List All'");
 }
 
 else if (pattern.test(userInput))
@@ -121,11 +122,13 @@ else if (pattern.test(userInput))
 
     if (accountExistsQ(name))
     {
+        logger.debug("User entered 'List " + name + "'");
         tempTransactions = [];
         for (let i in transactions)
         {
             if(transactions[i].from === name || transactions[i].to === name)
                 tempTransactions.push(transactions[i]);
+
         }
 
         for (let i in tempTransactions)
@@ -145,21 +148,20 @@ else if (pattern.test(userInput))
                     tempTransactions[i].narrative);
             }
             else
-                console.log('Big error');
-                logger.error("Unhandled error case");
+                 logger.error("Unhandled error case");
 
         }
     }
     else
     {
         console.log(name + ' not found in system.');
-        logger.debug("User entered a name that was not in the system")
+        logger.debug("User entered a name that was not in the system : " + name)
     }
 }
 
 else
 {
-    console.log('User did not input "List All" or "List [Account]" : ');
+    console.log('User did not input "List All" or "List [Account]" : ' + userInput);
     //maybe send this back to the user input step now
-    logger.debug("User did not input 'List All' or 'List [Account]'");
+    logger.debug("User did not input 'List All' or 'List [Account]' : " + userInput );
 }
