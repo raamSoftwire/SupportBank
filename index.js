@@ -4,10 +4,10 @@ const readlineSync = require('readline-sync');
 const log4js = require('log4js');
 const moment = require('moment');
 
-const Transaction = require('C:\\Work\\Training\\SupportBank\\transactionClass.js');
-const Account = require('C:\\Work\\Training\\SupportBank\\accountClass.js');
+const Transaction = require('./transactionClass');
 
-const accountExistsQ = require('C:\\Work\\Training\\SupportBank\\accountExistsQ.js');
+const accountExistsQ = require('./accountExistsQ');
+const createAccounts = require('./createAccounts');
 
 const formatter = new Intl.NumberFormat('en-UK', {
     style: 'currency',
@@ -55,36 +55,7 @@ function parseTransactions(){
         " transactions");
 }
 
-function createAccounts()
-{
-    for(let i in transactions)
-    {
-        if(!accountExistsQ(transactions[i].from))
-        {
-            //if the account does not exist,create the account
-            senderAccount = new Account(transactions[i].from,0);
-            accounts.push(senderAccount);
-        }
-        else
-        {
-            senderAccount = accounts.find(account => account.name === transactions[i].from);
-        }
 
-        if(!accountExistsQ(transactions[i].to))
-        {
-            //if the account does not exist,create the account
-            receiverAccount = new Account(transactions[i].to,0);
-            accounts.push(receiverAccount);
-        }
-        else
-        {
-            receiverAccount = accounts.find(account => account.name === transactions[i].to);
-        }
-
-        senderAccount.amount = senderAccount.amount - transactions[i].amount;
-        receiverAccount.amount = receiverAccount.amount + transactions[i].amount;
-    }
-}
 
 function importFile(fileName) {
     var ext = fileName.split('.').pop();
@@ -93,6 +64,11 @@ function importFile(fileName) {
         try {
             const inputArray = fs.readFileSync(dataFile).toString();
             const records = parse(inputArray, {columns: true});
+            // return records.map(function(record) {
+            //
+            //     return new Transaction(record.date);
+            // });
+
             return records;
         }
 
@@ -131,7 +107,7 @@ records = importFile(dataFile);
 
 
 
-const logger = log4js.getLogger(dataFile);
+const logger = log4js.getLogger('index.js');
 logger.debug("Program starting up...")
 
 
@@ -140,13 +116,6 @@ parseTransactions();
 
 accounts = [];
 createAccounts();
-
-
-
-
-
-
-
 
 const userInput = readlineSync.question('Please enter "List All" or "List [Account]" : ');
 const pattern = new RegExp("List ");
