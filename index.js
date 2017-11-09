@@ -18,30 +18,48 @@ log4js.configure({
     categories: {default: { appenders: ['file'], level: 'debug'}}
 });
 
+function importFile(fileName) {
+    var ext = fileName.split('.').pop();
+    if(ext === "csv")
+    {
 
-// dataFile = 'Transactions2014.csv';
-// dataFile = 'DodgyTransactions2015.csv';
+        const inputArray = fs.readFileSync(dataFile).toString();
+        const records = parse(inputArray, {columns: true});
+        return records;
 
-dataFile = 'Transactions2013.json';
+
+    }
+    else if (ext === 'json')
+    {
+        const inputArray = fs.readFileSync(dataFile).toString();
+        const records = JSON.parse(inputArray);
+        return records;
+    }
+    else
+    {
+        console.log("Please enter the name of a suitable .csv or .json file")
+    }
+
+}
+
+
+
+const dataFile = readlineSync.question('Please enter the transaction filename : ');
+records = importFile(dataFile);
+
+
+
 
 const logger = log4js.getLogger(dataFile);
 logger.debug("Program starting up...")
 
-const inputArray = fs.readFileSync(dataFile).toString();
-
-
-
-// const records = parse(inputArray, {columns: true});
-
-const records = JSON.parse(inputArray);
 
 transactions = [];
 var keys = Object.keys(records[1]);
 
 for(let i in records)
 {
-    let lineValue = parseInt(i) + 2;
-
+    let lineValue = parseInt(i) + 2; // +1 for header row, +1 for zero base
 
     if(!moment(records[i]['Date'],["DD/MM/YYYY","YYYY-MM-DD"],'en').isValid())
     {
@@ -51,7 +69,6 @@ for(let i in records)
 
     else if (isNaN(parseFloat(records[i]['Amount'])))
     {
-
         logger.error("Invalid amount found in line " + lineValue
             + " : " + records[i]['Amount'])
     }
@@ -167,6 +184,5 @@ else if (pattern.test(userInput))
 else
 {
     console.log('User did not input "List All" or "List [Account]" : ' + userInput);
-    //maybe send this back to the user input step now
     logger.debug("User did not input 'List All' or 'List [Account]' : " + userInput );
 }
