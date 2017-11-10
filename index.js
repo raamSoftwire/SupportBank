@@ -77,14 +77,29 @@ function importFile(fileName) {
     if(ext === "csv")
     {
         try {
-            const inputArray = fs.readFileSync(dataFile).toString();
-            const records = parse(inputArray, {columns: true});
+            const inputString = fs.readFileSync(dataFile).toString();
+            const unprocessedTransactions = parse(inputString, {columns: true});
+            transactions = [];
+
+            for (i in unprocessedTransactions)
+            {
+                transaction = new Transaction(
+                    unprocessedTransactions['Date'],
+                    unprocessedTransactions['From'],
+                    unprocessedTransactions['To'],
+                    unprocessedTransactions['Narrative'],
+                    unprocessedTransactions['Amount']);
+
+                transactions.push(transaction);
+            }
+
+
             // return records.map(function(record) {
             //
             //     return new Transaction(record.date);
             // });
 
-            return records;
+            return transactions;
         }
 
         catch(err)
@@ -141,10 +156,20 @@ function importFile(fileName) {
 
 const dataFile = readlineSync.question('Please enter the transaction filename : ');
 
-records = importFile(dataFile);
+// records = importFile(dataFile);
 
-transactions = [];
-parseTransactions(); //parses records into transactions
+
+
+// transactions = [];
+// parseTransactions(); //parses records into transactions
+
+transactions = importFile(dataFile);
+
+for (i in transactions)
+{
+    transactions[i].processTransaction();
+}
+
 
 accounts = [];
 createAccounts(); //works through all transactions and creates all necessary accounts
